@@ -4,16 +4,23 @@ import requests
 import json
 import pandas as pd
 
+# This code uses a locally hosted version of the llama-gpt model (7b) to generate responses to article summaries.
+# To install and run the model, follow the instructions here:
+# https://github.com/getumbrel/llama-gpt#how-to-install
+# Docker must be installed on your machine to run the model if you are using Windows or macOS
+
 # Load the data
 data = pd.read_csv('data/articles_summary_cleaned.csv')
+
+# Only use the summary column, the rest of the columns are not needed
 summaries = data["summary"].tolist()
 responses = []
 
-# Define the starting index and where you want to stop
+# Define the starting index and where you want to stop, useful if you want to split the work between multiple people
 start_index = 0
 stop_index = 18524
 
-# Check if there is a saved index in a file
+# Check if there is a saved index in a file. Used to resume the process if it was interrupted
 try:
     with open('index.txt', 'r') as file:
         start_index = int(file.read())
