@@ -11,10 +11,19 @@ df = pd.read_csv("data/articles_summary_cleaned.csv", parse_dates=["date"]) # Re
 
 docs = df["summary"].tolist()
 
-iterations = 10 # Number of iterations to run
+iterations = 7 # Number of iterations to run
+
+keyword_sets2 = [
+    (['hunger', 'food insecurity', 'food', 'crop', 'famine'], 'hunger'),
+    (['refugees', 'displaced'], 'refugees'),
+    (['humanitarian'], 'humanitarian'),
+    (['conflict', 'fighting', 'murder', 'military'], 'conflict'),
+    (["politics", "government", "elections", "independence"], 'politics'),
+    (['aid', 'assistance', 'relief'], 'aid')
+]
 
 keyword_sets = [
-    (['hunger', 'food insecurity', 'conflict'], 'hunger'),
+    (['hunger', 'food insecurity', 'conflict', 'food', 'crop', 'famine'], 'hunger'),
     (['refugees', 'displaced'], 'refugees'),
     (['humanitarian'], 'humanitarian'),
     (['conflict', 'fighting', 'murder', 'military'], 'conflict'),
@@ -151,6 +160,8 @@ for i in range(iterations):
             # write lengths to file
             for length in lengths_per_iteration:
                 f.write(str(length) + "\n")
+        for model in models:
+            model.save("data/" + {str(model._cluster_embeddings())} + f"_{i}_iter")
 
         df.to_csv("data/bertopic_10_iter", index=False)
         exit()
@@ -188,6 +199,9 @@ with open("lengths.txt", "w") as f:
     #write lengths to file
     for length in lengths_per_iteration:
         f.write(str(length) + "\n")
+
+for model in models:
+    model.save("data/" + {str(model._cluster_embeddings())} + "_7_iter")
 
 df.to_csv("data/bertopic_10_iter", index=False)
 
