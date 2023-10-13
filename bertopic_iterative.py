@@ -124,7 +124,9 @@ for model in models:
         # Add a boolean column to the 'df' DataFrame if the topic is in the list of relevant topics
         df[label] = [t in topic_ids for t in model.topics_]
 
-unsorted = df[(df["hunger"]==False) & (df["refugees"] == False) & (df["humanitarian"] == False) & (df["conflict"] == False) & (df["politics"] == False) & (df["aid"] == False) & (df["crops"] == False)]
+# unsorted = df[(df["hunger"]==False) & (df["refugees"] == False) & (df["humanitarian"] == False) & (df["conflict"] == False) & (df["politics"] == False) & (df["aid"] == False) & (df["crops"] == False)]
+unsorted = df[(df["hunger"]==False) & (df["refugees"] == False) & (df["humanitarian"] == False) & (df["conflict"] == False) & (df["politics"] == False) & (df["aid"] == False)]
+
 
 lengths_per_iteration = []
 
@@ -163,14 +165,14 @@ for i in range(iterations):
         for model in models:
             model.save("data/" + {str(model._cluster_embeddings())} + f"_{i}_iter")
 
-        df.to_csv("data/bertopic_10_iter", index=False)
+        df.to_csv("data/bertopic_10_iter.csv", index=False)
         exit()
 
 
     models = [kmeans_model, agglomerative_model, optics_model, spectral_model, bertopic]
 
     for model in models:
-        for keywords, label in keyword_sets:
+        for keywords, label in keyword_sets2:
             # Get the top 10 topics related to the current set of keywords
             relevant_topics = get_relevant_topics(bertopic_model=model, keywords=keywords, top_n=10)
 
@@ -185,17 +187,18 @@ for i in range(iterations):
             # Add a boolean column to 'unsorted' DataFrame if the topic is in the list of relevant topics
             unsorted[label] = [t in topic_ids for t in bertopic.topics_]
         # store length of unsorted
-        length = len(unsorted[(unsorted["hunger"]==False) & (df["refugees"] == False) & (df["humanitarian"] == False) & (df["conflict"] == False) & (df["politics"] == False) & (df["aid"] == False) & (df["crops"] == False)])
+        # length = len(unsorted[(unsorted["hunger"]==False) & (df["refugees"] == False) & (df["humanitarian"] == False) & (df["conflict"] == False) & (df["politics"] == False) & (df["aid"] == False) & (df["crops"] == False)])
+        length = len(unsorted[(df["hunger"]==False) & (df["refugees"] == False) & (df["humanitarian"] == False) & (df["conflict"] == False) & (df["politics"] == False) & (df["aid"] == False)])
         lengths.append(length)
 
     df.update(unsorted)
 
-    unsorted = unsorted[(unsorted["hunger"]==False) & (df["refugees"] == False) & (df["humanitarian"] == False) & (df["conflict"] == False) & (df["politics"] == False) & (df["aid"] == False) & (df["crops"] == False)]
+    unsorted = unsorted[(unsorted["hunger"]==False) & (df["refugees"] == False) & (df["humanitarian"] == False) & (df["conflict"] == False) & (df["politics"] == False) & (df["aid"] == False)]
 
     lengths_per_iteration.append(lengths)
 
 print(lengths_per_iteration)
-with open("lengths.txt", "w") as f:
+with open("lengths_new.txt", "w") as f:
     #write lengths to file
     for length in lengths_per_iteration:
         f.write(str(length) + "\n")
@@ -203,6 +206,6 @@ with open("lengths.txt", "w") as f:
 for model in models:
     model.save("data/" + {str(model._cluster_embeddings())} + "_7_iter")
 
-df.to_csv("data/bertopic_10_iter", index=False)
+df.to_csv("data/bertopic_10_iter.csv", index=False)
 
 
